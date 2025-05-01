@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
+import { MongoClient,ObjectId } from "mongodb";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,11 @@ app.get("/products", async (req, res) => {
   const products = await db.collection("products").find().toArray();
   res.json(products);
 });
-
+app.delete("/products/:id", async (req, res) => {
+  const id = req.params.id
+  const products = await db.collection("products").deleteOne({_id:new ObjectId(id)});
+  res.json(products);
+});
 app.post("/products", async (req, res) => {
   const { name, price } = req.body;
   const newProduct = {
