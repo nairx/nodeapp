@@ -1,20 +1,21 @@
 import express from "express";
 import cors from "cors";
+import { MongoClient } from "mongodb";
 const app = express();
 app.use(cors());
-app.listen(8081, () => {
-  console.log("Server started on port 8081");
-});
+app.use(express.json())
+const uri = "mongodb://localhost:27017"
+const client = new MongoClient(uri)
+const db = client.db("mernappdb")
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-app.get("/products", (req, res) => {
-  const products = [
-    { id: 1, name: "Product 1", price: 34 },
-    { id: 2, name: "Product 2", price: 45 },
-    { id: 3, name: "Product 3", price: 50 },
-  ];
+app.get("/products", async (req, res) => {
+  const products = await db.collection("products").find().toArray()
   res.json(products);
+});
+app.listen(8081, () => {
+  console.log("Server started on port 8081");
 });
 
 
